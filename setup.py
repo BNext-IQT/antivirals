@@ -19,16 +19,6 @@ class PyTest(test):
         errno = pytest.main(shlex.split(self.pytest_args))
         sys.exit(errno)
 
-
-print("Checking for RDKit... ", end='')
-try:
-    from rdkit import Chem
-except ImportError:
-    print("ERROR!")
-    print("ERROR: RDKit not found. It is required amd must be installed seperately.")
-    exit(-1)
-print("SUCCESS!")
-
 # The actual setup metadata
 setup(
     name='antivirals',
