@@ -1,3 +1,4 @@
+from __future__ import annotations
 import pickle
 from typing import Sequence, Generator
 from multiprocessing import cpu_count
@@ -51,12 +52,12 @@ class Toxicity:
 
         self.tox.fit(latent_vecs, Y)
 
-    def save(self, path):
+    def save(self, path: str) -> RandomForestClassifier:
         with open(path, 'wb') as fd:
             pickle.dump(self.tox, fd)
 
     @staticmethod
-    def load(tox_model_path, language_model_path):
+    def load(tox_model_path: str, language_model_path: str):
         with open(language_model_path, 'rb') as fd:
             lm = pickle.load(fd)
         with open(tox_model_path, 'rb') as fd:
@@ -147,11 +148,11 @@ class Language:
 
         self.document_model = document_model
 
-    def save(self, path):
+    def save(self, path: str) -> Language:
         with open(path, 'wb') as fd:
             pickle.dump(self, fd)
 
     @staticmethod
-    def load(path):
+    def load(path: str):
         with open(path, 'rb') as fd:
             return pickle.load(fd)
