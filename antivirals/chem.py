@@ -37,11 +37,11 @@ class Toxicity:
 
     def __init__(self, language_model):
         self.language = language_model
+
+    def fit(self, X, Y):
         self.tox = RandomForestClassifier(
             bootstrap=False, criterion='entropy', max_features=0.25,
             min_samples_leaf=6, min_samples_split=6, n_estimators=256)
-
-    def fit(self, X, Y):
         # Preallocate memory for performance
         latent_vecs = np.empty(
             (len(X), self.language.document_model.vector_size))
@@ -53,12 +53,18 @@ class Toxicity:
 
     def save(self, path):
         with open(path, 'wb') as fd:
-            pickle.dump(self, fd)
+            pickle.dump(self.tox, fd)
 
     @staticmethod
-    def load(path):
-        with open(path, 'rb') as fd:
-            return pickle.load(fd)
+    def load(tox_model_path, language_model_path):
+        with open(language_model_path, 'rb') as fd:
+            lm = pickle.load(fd)
+        with open(tox_model_path, 'rb') as fd:
+            tox_classif = pickle.load(fd)
+        tox_model = Toxicity(lm)
+        tox_model.tox = tox_classif
+        return tox_model
+        
 
 
 class Language:
