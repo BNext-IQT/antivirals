@@ -24,6 +24,7 @@ We need your help if you have one of the following skills:
 * Software development in Python
 * Machine learning
 * Web development (for the UI)
+* Cheminformatics
 * DevOps -- especially with Kubernetes and Helm
 
 Fork the project and create a new branch:
@@ -54,15 +55,15 @@ Using the system through Docker is highly recommended:
 
 Architecture
 ~~~~~~~~~~~~
-The system is structured in a quazi Model-View-Controller archiecture.
+The system is structured in a quazi Model-View-Controller (MVC) architecture.
 
-* __init__.py: Executes operations like training and inference. The "controller" layer in MVC archiecture.
-* schema.py: Contains all the code for adding to and querying the molecular database. The "model" layer in MVC archiecture.
-* __main__.py: A command-line user interface. The "view" layer in MVC archiecture.
+* __init__.py: Agents that execute operations and connect everything together. The "controller" layer in MVC.
+* schema.py: Contains all the code for adding to and querying the molecular database. The "model" layer in MVC.
+* __main__.py: A command-line user interface. The "view" layer in MVC.
 * data.py: Maps from public datasets (eg. ZINC Clean Leads, Tox21) to the molecular database schema.
 * chem.py: The actual cheminformatics machine learning algorithms.
 
-There is also work to make it function as part of Docker and Kubernetes. Help is needed!
+We are investigating how to deploy it at scale on Kubernetes. Help is needed!
 
 Usage
 ~~~~~
