@@ -29,7 +29,3 @@ def run_train_models(dbstring: str):
     Path('data').mkdir(exist_ok=True)
     with open(Path('data', 'chemistry.model'), 'wb') as fd:
         pickle.dump(chem, fd)
-
-
-def run_do_science():
-    pass
