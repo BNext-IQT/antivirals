@@ -10,9 +10,10 @@ Base = declarative_base()
 
 
 class OriginCategory(enum.Enum):
-    Dataset = 1
-    Model = 2
-    User = 3
+    GroundTruth = 1
+    Computed = 2
+    Interactive = 3
+    Unknown = 4
 
 
 class PartitionCategory(enum.Enum):

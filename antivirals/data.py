@@ -126,7 +126,7 @@ class ZINC:
     origin = Origin(
         name='ZINC',
         desc='Collection of commerically available chemicals prepared for virtual screening',
-        category=OriginCategory.Dataset
+        category=OriginCategory.GroundTruth
     )
 
     def to_sql(self, sess: Session):
@@ -137,7 +137,7 @@ class MOSES:
     origin = Origin(
         name='MOSES',
         desc='Benchmark dataset of drug-like molecules from the ZINC Clean Leads collection',
-        category=OriginCategory.Dataset
+        category=OriginCategory.GroundTruth
     )
     properties = []
     source = 'https://media.githubusercontent.com/media/molecularsets/moses/master/data/dataset_v1.csv'
@@ -166,7 +166,7 @@ class Tox21:
     origin = Origin(
         name='Tox21',
         desc='Qualitative toxicity measurements including nuclear receptors and stress response pathways',
-        category=OriginCategory.Dataset
+        category=OriginCategory.GroundTruth
     )
     properties = [NR_AhR, NR_AR, NR_AR_LBD, NR_Aromatase, NR_ER, NR_ER_LBD,
                   NR_PPAR_gamma, SR_ARE, SR_ATAD5, SR_HSE, SR_MMP, SR_p53]
