@@ -61,7 +61,7 @@ class Toxicity:
     def __init__(self, language_model: Language):
         self.language = language_model
     
-    def _to_language_vecs(self, X):
+    def _to_language_vecs(self, X: Sequence[str]) -> np.ndarray:
         # Preallocate memory for performance
         latent_vecs = np.empty(
             (len(X), self.language.document_model.vector_size))
@@ -71,7 +71,7 @@ class Toxicity:
         
         return latent_vecs
 
-    def fit(self, X, Y):
+    def fit(self, X: Sequence[str], Y: np.ndarray):
         self.classif = RandomForestClassifier(
             bootstrap=False, criterion='entropy', max_features=0.25,
             min_samples_leaf=6, min_samples_split=6, n_estimators=256)
