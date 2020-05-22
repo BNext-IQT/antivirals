@@ -1,5 +1,4 @@
 from __future__ import annotations
-import pickle
 from typing import Sequence, Generator
 from multiprocessing import cpu_count
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
