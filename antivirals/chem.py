@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
+from antivirals.schema import Molecules
 
 
 class _WrapGenerator:
@@ -31,6 +32,27 @@ class _WrapGenerator:
             return res
 
 
+class Chemistry:
+    toxicity: Toxicity 
+    language: Language
+
+    def __init__(self, mols: Molecules = None):
+        self.language = Language()
+        self.toxicity = Toxicity(self.language)
+        if mols:
+            self.from_molecules(mols)
+
+    def from_molecules(self, mols: Molecules):
+        tox_data = mols.get_mols_with_passfail_labels()
+        X = tox_data.index
+        y = tox_data.astype('int')
+        
+        self.language.fit(mols.get_all_mols(), X, y)
+        
+        self.toxicity = Toxicity(self.language)
+        self.toxicity.fit(X, y)
+
+
 class Toxicity:
     """
     Implments the toxicity model ontop of the latent vectors of the chemical language model.
@@ -51,22 +73,7 @@ class Toxicity:
             latent_vecs[i] = self.language.document_model.infer_vector(sent)
 
         self.tox.fit(latent_vecs, Y)
-
-    def save(self, path: str) -> RandomForestClassifier:
-        with open(path, 'wb') as fd:
-            pickle.dump(self.tox, fd)
-
-    @staticmethod
-    def load(tox_model_path: str, language_model_path: str):
-        with open(language_model_path, 'rb') as fd:
-            lm = pickle.load(fd)
-        with open(tox_model_path, 'rb') as fd:
-            tox_classif = pickle.load(fd)
-        tox_model = Toxicity(lm)
-        tox_model.tox = tox_classif
-        return tox_model
         
-
 
 class Language:
     """
@@ -147,12 +154,3 @@ class Language:
             generator, total_examples=len(X_unmapped), epochs=36)
 
         self.document_model = document_model
-
-    def save(self, path: str) -> Language:
-        with open(path, 'wb') as fd:
-            pickle.dump(self, fd)
-
-    @staticmethod
-    def load(path: str):
-        with open(path, 'rb') as fd:
-            return pickle.load(fd)
