@@ -33,6 +33,10 @@ class _WrapGenerator:
 
 
 class Hyperparameters:
+    """
+    Hyperparameters for all chemistry models.
+    """
+    
     # Language hyperparams
     vec_dims = 32
     vec_window = 8
@@ -46,6 +50,10 @@ class Hyperparameters:
 
 
 class Chemistry:
+    """
+    A master model that encodes all aspects of chemistry.
+    """
+
     toxicity: Toxicity
     language: Language
     hyperparams: Hyperparameters
