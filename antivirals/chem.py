@@ -58,21 +58,25 @@ class Toxicity:
     Implments the toxicity model ontop of the latent vectors of the chemical language model.
     """
 
-    def __init__(self, language_model):
+    def __init__(self, language_model: Language):
         self.language = language_model
-
-    def fit(self, X, Y):
-        self.tox = RandomForestClassifier(
-            bootstrap=False, criterion='entropy', max_features=0.25,
-            min_samples_leaf=6, min_samples_split=6, n_estimators=256)
+    
+    def _to_language_vecs(self, X):
         # Preallocate memory for performance
         latent_vecs = np.empty(
             (len(X), self.language.document_model.vector_size))
 
         for i, sent in enumerate(self.language.make_generator(X)):
             latent_vecs[i] = self.language.document_model.infer_vector(sent)
+        
+        return latent_vecs
 
-        self.tox.fit(latent_vecs, Y)
+    def fit(self, X, Y):
+        self.classif = RandomForestClassifier(
+            bootstrap=False, criterion='entropy', max_features=0.25,
+            min_samples_leaf=6, min_samples_split=6, n_estimators=256)
+
+        self.classif.fit(self._to_language_vecs(X), Y)
         
 
 class Language:
