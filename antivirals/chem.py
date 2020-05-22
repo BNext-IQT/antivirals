@@ -32,13 +32,30 @@ class _WrapGenerator:
             return res
 
 
-class Chemistry:
-    toxicity: Toxicity 
-    language: Language
+class Hyperparameters:
+    # Language hyperparams
+    vec_dims = 32
+    vec_window = 8
+    max_vocab = 18000
+    max_ngram = 6
 
-    def __init__(self, mols: Molecules = None):
-        self.language = Language()
-        self.toxicity = Toxicity(self.language)
+    # Toxicity hyperparams
+    estimators = 256
+    min_samples_split = 6
+    min_samples_leaf = 6
+
+
+class Chemistry:
+    toxicity: Toxicity
+    language: Language
+    hyperparams: Hyperparameters
+
+    def __init__(
+            self, mols: Molecules = None,
+            hyperparams: Hyperparameters = Hyperparameters()):
+        self.hyperparams = hyperparams
+        self.language = Language(self.hyperparams)
+        self.toxicity = Toxicity(self.hyperparams, self.language)
         if mols:
             self.from_molecules(mols)
 
@@ -46,10 +63,8 @@ class Chemistry:
         tox_data = mols.get_mols_with_passfail_labels()
         X = tox_data.index
         y = tox_data.astype('int')
-        
+
         self.language.fit(mols.get_all_mols(), X, y)
-        
-        self.toxicity = Toxicity(self.language)
         self.toxicity.fit(X, y)
 
 
@@ -58,9 +73,10 @@ class Toxicity:
     Implments the toxicity model ontop of the latent vectors of the chemical language model.
     """
 
-    def __init__(self, language_model: Language):
+    def __init__(self, hyperparams: Hyperparameters, language_model: Language):
+        self.hyperparams = hyperparams
         self.language = language_model
-    
+
     def _to_language_vecs(self, X: Sequence[str]) -> np.ndarray:
         # Preallocate memory for performance
         latent_vecs = np.empty(
@@ -68,20 +84,22 @@ class Toxicity:
 
         for i, sent in enumerate(self.language.make_generator(X)):
             latent_vecs[i] = self.language.document_model.infer_vector(sent)
-        
+
         return latent_vecs
 
     def fit(self, X: Sequence[str], Y: np.ndarray):
         self.classif = RandomForestClassifier(
             bootstrap=False, criterion='entropy', max_features=0.25,
-            min_samples_leaf=6, min_samples_split=6, n_estimators=256)
+            min_samples_leaf=self.hyperparams.min_samples_leaf,
+            min_samples_split=self.hyperparams.min_samples_split,
+            n_estimators=self.hyperparams.estimators)
 
         self.classif.fit(self._to_language_vecs(X), Y)
-    
+
     def audit(self, X: Sequence[str], Y: np.ndarray):
-        Yh = self.classif.predict_proba(self._to_language_vecs(X)[:,1])
+        Yh = self.classif.predict_proba(self._to_language_vecs(X)[:, 1])
         return roc_auc_score(Y, Yh)
-        
+
 
 class Language:
     """
@@ -90,9 +108,8 @@ class Language:
     a surrigate prediction set encoding chemistry semantics.
     """
 
-    def __init__(self, path=None):
-        if path:
-            self.document_model = Doc2Vec.load(path)
+    def __init__(self, hyperparams: Hyperparameters):
+        self.hyperparams = hyperparams
 
     def _smiles_to_trivial_lang(self, smiles_seq: Sequence[str]) -> Generator[str, None, None]:
         for smiles in smiles_seq:
@@ -132,11 +149,11 @@ class Language:
         for sentence in translation:
             yield self.document_model.infer_vector(sentence)
 
-    def fit(self, X_unmapped, X, Y, max_vocab=18000,
-            max_features_to_test=180000, window=8, dims=32, max_ngram=5):
+    def fit(self, X_unmapped: Sequence[str], X: Sequence[str], Y: np.ndarray):
         cv = CountVectorizer(
-            max_df=0.95, min_df=2, lowercase=False, ngram_range=(1, max_ngram),
-            max_features=max_features_to_test,
+            max_df=0.95, min_df=2, lowercase=False,
+            ngram_range=(1, self.hyperparams.max_ngram),
+            max_features=(self.hyperparams.max_vocab * 18),
             token_pattern='[a-zA-Z0-9$&+,:;=?@_/~#\\[\\]|<>.^*()%!-]+')
 
         X_vec = cv.fit_transform(self._smiles_to_trivial_lang(X))
@@ -148,15 +165,19 @@ class Language:
                           X_vec, Y[feat], discrete_features=True)
                       )
             local_vocab.update(res)
-        self.vocab = {i[0] for i in sorted(
-            local_vocab, key=lambda i: i[1], reverse=True)[:max_vocab]}
+        self.vocab = {
+            i[0]
+            for i in sorted(
+                local_vocab, key=lambda i: i[1],
+                reverse=True)[: self.hyperparams.max_vocab]}
 
         self._analyzer = cv.build_analyzer()
 
         generator = self._make_iterator(X_unmapped, training=True)
 
         document_model = Doc2Vec(
-            vector_size=dims, workers=cpu_count(), window=window)
+            vector_size=self.hyperparams.vec_dims, workers=cpu_count(),
+            window=self.hyperparams.vec_window)
         document_model.build_vocab(generator)
         document_model.train(
             generator, total_examples=len(X_unmapped), epochs=36)
