@@ -6,6 +6,7 @@ from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from pysmiles.read_smiles import _tokenize
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_selection import mutual_info_classif
+from sklearn.metrics import roc_auc_score
 from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 from antivirals.schema import Molecules
@@ -77,6 +78,10 @@ class Toxicity:
             min_samples_leaf=6, min_samples_split=6, n_estimators=256)
 
         self.classif.fit(self._to_language_vecs(X), Y)
+    
+    def audit(self, X: Sequence[str], Y: np.ndarray):
+        Yh = self.classif.predict_proba(self._to_language_vecs(X)[:,1])
+        return roc_auc_score(Y, Yh)
         
 
 class Language:
