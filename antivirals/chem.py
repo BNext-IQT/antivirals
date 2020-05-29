@@ -168,7 +168,7 @@ class Language:
         for sentence in translation:
             yield self.document_model.infer_vector(sentence)
 
-    def fit(self, X_unmapped: Sequence[str], X: Sequence[str], Y: np.ndarray):
+    def _fit_language(self, X_unmapped: Sequence[str], X: Sequence[str], Y: np.ndarray):
         cv = CountVectorizer(
             max_df=0.95, min_df=2, lowercase=False,
             ngram_range=(1, self.hyperparams.max_ngram),
@@ -192,6 +192,7 @@ class Language:
 
         self._analyzer = cv.build_analyzer()
 
+    def _fit_document_model(self, X_unmapped: Sequence[str], X: Sequence[str], Y: np.ndarray):
         generator = self._make_iterator(X_unmapped, training=True)
 
         document_model = Doc2Vec(
@@ -202,3 +203,7 @@ class Language:
             generator, total_examples=len(X_unmapped), epochs=36)
 
         self.document_model = document_model
+
+    def fit(self, X_unmapped: Sequence[str], X: Sequence[str], Y: np.ndarray):
+        self._fit_language(X_unmapped, X, Y)
+        self._fit_document_model(X_unmapped, X, Y)
