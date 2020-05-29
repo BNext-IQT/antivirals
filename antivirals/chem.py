@@ -68,13 +68,10 @@ class Chemistry:
     hyperparams: Hyperparameters
 
     def __init__(
-            self, mols: Molecules = None,
+            self,
             hyperparams: Hyperparameters = Hyperparameters()):
         self.hyperparams = hyperparams
         self.language = Language(self.hyperparams)
-        if mols:
-            self.from_molecules(mols)
-        else:
             self.toxicity = Toxicity(self.hyperparams, self.language)
 
     def from_molecules(self, mols: Molecules):
