@@ -1,6 +1,8 @@
 import os
+import sys
 from fire import Fire
 from antivirals import run_agent, run_data_gathering, run_train_models
+from antivirals.chem import Hyperparameters
 
 
 def _get_dbstring() -> str:
@@ -28,13 +30,18 @@ class Controller:
             db = "sqlite://"
         run_data_gathering(db)
 
-    def train(self, db=None):
+    def train(self, db=None, dims=None):
         """
         Just train the cheminformatics models.
         """
         if not db:
             db = "sqlite://"
-        run_train_models(db)
+        
+        hp = Hyperparameters()
+        if dims:
+            hp.vec_dims = int(dims)
+
+        run_train_models(db, hp)
 
     def agent(self, db):
         """

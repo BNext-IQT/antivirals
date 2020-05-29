@@ -4,9 +4,8 @@ from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm.session import sessionmaker, Session
 from antivirals.schema import Molecules
-from antivirals.chem import Chemistry
+from antivirals.chem import Chemistry, Hyperparameters
 from antivirals.data import download_all
-
 
 def _create_sess(dbstring: str) -> Session:
     engine = create_engine(dbstring)
@@ -21,7 +20,7 @@ def run_data_gathering(dbstring: str):
     download_all(_create_sess(dbstring))
 
 
-def run_train_models(dbstring: str):
+def run_train_models(dbstring: str, hpstring = Hyperparameters()):
     sess = _create_sess(dbstring)
     mols = Molecules(sess)
     chem = Chemistry()
