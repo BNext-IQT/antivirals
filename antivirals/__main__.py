@@ -30,18 +30,17 @@ class Controller:
             db = "sqlite://"
         run_data_gathering(db)
 
-    def train(self, db=None, dims=None):
+    def train(self, db=None, hp=None):
         """
         Just train the cheminformatics models.
         """
+
         if not db:
             db = "sqlite://"
-        
-        hp = Hyperparameters()
-        if dims:
-            hp.vec_dims = int(dims)
-
-        run_train_models(db, hp)
+        if hp:
+            run_train_models(db, Hyperparameters.from_dict(hp))
+        else:
+            run_train_models(db)
 
     def agent(self, db):
         """
