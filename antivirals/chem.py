@@ -43,6 +43,7 @@ class Hyperparameters:
     vec_window = 8
     max_vocab = 18000
     max_ngram = 6
+    doc_epochs = 32
 
     # Toxicity hyperparams
     estimators = 256
@@ -200,7 +201,7 @@ class Language:
             window=self.hyperparams.vec_window)
         document_model.build_vocab(generator)
         document_model.train(
-            generator, total_examples=len(X_unmapped), epochs=36)
+            generator, total_examples=len(X_unmapped), epochs=self.hyperparams.doc_epochs)
 
         self.document_model = document_model
 
