@@ -1,4 +1,5 @@
 import pickle
+from uuid import uuid4
 from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm.session import sessionmaker, Session
@@ -26,6 +27,6 @@ def run_train_models(dbstring: str):
     chem = Chemistry()
     chem.from_molecules(mols)
 
-    Path('data').mkdir(exist_ok=True)
-    with open(Path('data', 'chemistry.model'), 'wb') as fd:
+    Path('data', 'chemistry').mkdir(parents=True, exist_ok=True)
+    with open(Path('data', 'chemistry', str(uuid4())), 'wb') as fd:
         pickle.dump(chem, fd)
