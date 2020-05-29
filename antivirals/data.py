@@ -133,6 +133,18 @@ class ZINC:
         pass
 
 
+class ChEMBL:
+    origin = Origin(
+        name='ChEMBL',
+        desc='ChEMBL is a manually curated chemical database of bioactive molecules with drug-like properties.',
+        category=OriginCategory.GroundTruth
+    )
+    source = 'ftp://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/chembl_27_sqlite.tar.gz'
+    archive_path = 'chembl_27/chembl_27_sqlite/chembl_27.db'
+
+    def to_sql(self, sess: Session):
+        pass
+
 class MOSES:
     origin = Origin(
         name='MOSES',
