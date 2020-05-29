@@ -50,6 +50,13 @@ class Hyperparameters:
     min_samples_split = 6
     min_samples_leaf = 6
 
+    @staticmethod
+    def from_dict(values):
+        hp = Hyperparameters()
+        hp.__dict__.update(values)
+        print(f"Hyperparams: {hp.__dict__}")
+        return hp
+
 
 class Chemistry:
     """
