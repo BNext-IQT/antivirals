@@ -7,6 +7,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.metrics import roc_auc_score
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
 import numpy as np
 from antivirals.schema import Molecules
 
@@ -63,23 +64,24 @@ class Chemistry:
             hyperparams: Hyperparameters = Hyperparameters()):
         self.hyperparams = hyperparams
         self.language = Language(self.hyperparams)
-        self.toxicity = Toxicity(self.hyperparams, self.language)
         if mols:
             self.from_molecules(mols)
+        else:
+            self.toxicity = Toxicity(self.hyperparams, self.language)
 
     def from_molecules(self, mols: Molecules):
         tox_data = mols.get_mols_with_passfail_labels()
         X = tox_data.index
         y = tox_data.astype('int')
-
         self.language.fit(mols.get_all_mols(), X, y)
-        self.toxicity.fit(X, y)
-
+        self.toxicity = Toxicity(self.hyperparams, self.language)
+        self.toxicity.build(X, y)
 
 class Toxicity:
     """
     Implments the toxicity model ontop of the latent vectors of the chemical language model.
     """
+    auc: Sequence[float]
 
     def __init__(self, hyperparams: Hyperparameters, language_model: Language):
         self.hyperparams = hyperparams
@@ -104,10 +106,19 @@ class Toxicity:
 
         self.classif.fit(self._to_language_vecs(X), Y)
 
-    def audit(self, X: Sequence[str], Y: np.ndarray):
-        Yh = self.classif.predict_proba(self._to_language_vecs(X)[:, 1])
-        return roc_auc_score(Y, Yh)
+    def build(self, X: Sequence[str] = None, Y: np.ndarray = None):
+        Xt, Xv, Yt, Yv = train_test_split(X, Y, test_size=0.2, random_state=18)
+        self.fit(Xt, Yt)
+        self.auc = self.audit(Xv, Yv)
 
+    def audit(self, X: Sequence[str], Y: np.ndarray):
+        Yhats = self.classif.predict_proba(self._to_language_vecs(X))
+        if 'to_numpy' in dir(Y):
+            Y = Y.to_numpy() 
+        res = []
+        for i, Yhat in enumerate(Yhats):
+            res.append(roc_auc_score(Y[:, i], Yhat[:, 1]))     
+        return res
 
 class Language:
     """
