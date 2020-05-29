@@ -108,7 +108,7 @@ ChemblId = Property(
 )
 
 ZincId = Property(
-    name='ChEMBL_Id',
+    name='ZINC_Id',
     desc='The molecule ID in the ZINC dataset',
     category=PropertyCategory.DataSetIdentifier,
     test=Test.IntIdentifier
