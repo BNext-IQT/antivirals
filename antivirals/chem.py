@@ -1,4 +1,5 @@
 from __future__ import annotations
+from uuid import uuid4
 from typing import Sequence, Generator
 from multiprocessing import cpu_count
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
@@ -54,7 +55,6 @@ class Hyperparameters:
     def from_dict(values):
         hp = Hyperparameters()
         hp.__dict__.update(values)
-        print(f"Hyperparams: {hp.__dict__}")
         return hp
 
 
@@ -66,6 +66,7 @@ class Chemistry:
     toxicity: Toxicity
     language: Language
     hyperparams: Hyperparameters
+    uuid: str
 
     def __init__(
             self,
@@ -73,6 +74,7 @@ class Chemistry:
         self.hyperparams = hyperparams
         self.language = Language(self.hyperparams)
             self.toxicity = Toxicity(self.hyperparams, self.language)
+        self.uuid = str(uuid4())
 
     def from_molecules(self, mols: Molecules):
         tox_data = mols.get_mols_with_passfail_labels()
@@ -81,6 +83,7 @@ class Chemistry:
         self.language.fit(mols.get_all_mols(), X, y)
         self.toxicity = Toxicity(self.hyperparams, self.language)
         self.toxicity.build(X, y)
+        print(f"Trained {self.uuid} -- {self.hyperparams}")
 
 class Toxicity:
     """
