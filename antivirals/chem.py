@@ -142,7 +142,7 @@ class Language:
         for smiles in smiles_seq:
             res = []
             for cat, symbol in _tokenize(smiles):
-                res.append(cat.name + '_OF_' + str(symbol))
+                res.append(cat.name + 'O' + str(symbol))
             yield ' '.join(res)
 
     def _smiles_to_advanced_lang(self, smiles_seq: Generator
@@ -154,7 +154,7 @@ class Language:
             res: Sequence[str] = []
             for token in sent:
                 if token in self.vocab:
-                    res.append(token.replace(' ', '_AND_'))
+                    res.append(token.replace(' ', 'A'))
             if training:
                 yield TaggedDocument(words=res, tags=[i])
             else:
