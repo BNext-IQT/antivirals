@@ -1,7 +1,7 @@
 import os
 import sys
 from fire import Fire
-from antivirals import run_agent, run_data_gathering, run_train_models
+from antivirals import run_agent, run_data_gathering, run_train_models, audit_all_models
 from antivirals.chem import Hyperparameters
 
 
@@ -57,6 +57,13 @@ class Controller:
             raise EnvironmentError("ANTIVIRALS_DB needs to be set.")
 
         run_agent(_get_dbstring())
+
+
+    def audit(self):
+        """
+        Display some analytics on all stored models.
+        """
+        audit_all_models()
 
 
 def main():

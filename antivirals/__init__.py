@@ -30,3 +30,16 @@ def run_train_models(dbstring: str, hp = Hyperparameters()) -> Chemistry:
         pickle.dump(chem, fd)
 
     return chem
+
+
+def audit_all_models():
+    model_dir = Path('data', 'chemistry')
+    for model in model_dir.iterdir():
+        with open(model, 'rb') as fd:
+            chem = pickle.load(fd)
+            print(f"Model UUID: {chem.uuid}")
+            print(f"AUC: {sum(chem.toxicity.auc) / len(chem.toxicity.auc)}")
+            print(f"Hyperparams: {chem.hyperparams.__dict__}")
+            print("--------")
+
+    
