@@ -3,7 +3,6 @@ from uuid import uuid4
 from typing import Sequence, Generator
 from multiprocessing import cpu_count
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
-from pysmiles.read_smiles import _tokenize
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_selection import mutual_info_classif
 from sklearn.metrics import roc_auc_score
@@ -11,6 +10,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 import numpy as np
 from antivirals.schema import Molecules
+from antivirals.parser import trivial_generator
 
 
 class _WrapGenerator:
@@ -138,13 +138,6 @@ class Language:
     def __init__(self, hyperparams: Hyperparameters):
         self.hyperparams = hyperparams
 
-    def _smiles_to_trivial_lang(self, smiles_seq: Sequence[str]) -> Generator[str, None, None]:
-        for smiles in smiles_seq:
-            res = []
-            for cat, symbol in _tokenize(smiles):
-                res.append(cat.name + 'O' + str(symbol))
-            yield ' '.join(res)
-
     def _smiles_to_advanced_lang(self, smiles_seq: Generator
                                  [str, None, None],
                                  training: bool = False) -> Generator[str, None,
@@ -165,11 +158,11 @@ class Language:
             training: bool = False) -> _WrapGenerator:
         return _WrapGenerator(
             lambda: self._smiles_to_advanced_lang(
-                self._smiles_to_trivial_lang(smiles_seq),
+                trivial_generator(smiles_seq),
                 training))
 
     def make_generator(self, X):
-        return self._smiles_to_advanced_lang(self._smiles_to_trivial_lang(X))
+        return self._smiles_to_advanced_lang(trivial_generator(X))
 
     def to_vecs(self, smiles_seq: Generator[str, None, None]) -> Generator[np.ndarray, None, None]:
         translation = self.make_generator(smiles_seq)
@@ -183,7 +176,7 @@ class Language:
             max_features=(self.hyperparams.max_vocab * 18),
             token_pattern='[a-zA-Z0-9$&+,:;=?@_/~#\\[\\]|<>.^*()%!-]+')
 
-        X_vec = cv.fit_transform(self._smiles_to_trivial_lang(X))
+        X_vec = cv.fit_transform(trivial_generator(X))
 
         local_vocab = set()
         for feat in Y.columns:

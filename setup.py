@@ -1,5 +1,8 @@
 from setuptools import setup, find_packages
 
+# Compile some code for performance
+from Cython.Build import cythonize
+
 # Boilerplate for integrating with PyTest
 from setuptools.command.test import test
 import sys
@@ -44,13 +47,14 @@ setup(
         'Operating System :: OS Independent'
     ],
     packages=find_packages(),
-    install_requires=['tqdm', 'sqlalchemy', 'numpy', 'pysmiles', 'scikit-learn', 'pandas',
+    install_requires=['tqdm', 'sqlalchemy', 'numpy', 'scikit-learn', 'pandas',
                       'fire', 'gensim'],
     extras_require={
         'gpu': ['tensorflow-gpu'],
         'cpu': ['tensorflow']
     },
     tests_require=['pytest'],
+    ext_modules = cythonize('antivirals/parser.py', language_level='3'),
     entry_points={
         'console_scripts': [
             'antivirals = antivirals.__main__:main',
