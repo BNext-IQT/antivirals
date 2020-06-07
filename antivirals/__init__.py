@@ -42,4 +42,18 @@ def audit_all_models():
             print(f"Hyperparams: {chem.hyperparams.__dict__}")
             print("--------")
 
+
+def garbage_collect_models(save_best_n: int, dry_run: bool):
+    model_dir = Path('data', 'chemistry')
+    metrics = {}
+    for model in model_dir.iterdir():
+        with open(model, 'rb') as fd:
+            chem = pickle.load(fd)
+            metrics[chem.uuid] = sum(chem.toxicity.auc) / len(chem.toxicity.auc)
     
+    models_sorted = [k for k, _ in sorted(metrics.items(), key=lambda i: i[1])]
+
+    for model in models_sorted[:-save_best_n]:
+        print(model)
+        if not dry_run:
+            (model_dir / model).unlink()

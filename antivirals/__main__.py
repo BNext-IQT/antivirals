@@ -1,9 +1,8 @@
 import os
 import sys
 from fire import Fire
-from antivirals import run_agent, run_data_gathering, run_train_models, audit_all_models
+from antivirals import run_agent, run_data_gathering, run_train_models, audit_all_models, garbage_collect_models
 from antivirals.chem import Hyperparameters
-
 
 def _get_dbstring() -> str:
     db = os.environ.get("ANTIVIRALS_DB")
@@ -64,6 +63,13 @@ class Controller:
         Display some analytics on all stored models.
         """
         audit_all_models()
+
+
+    def garbage_collect(self, save=5, dry_run=False):
+        """
+        Garbage collect poorly performing models.
+        """
+        garbage_collect_models(save, dry_run)
 
 
 def main():
