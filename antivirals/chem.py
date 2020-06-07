@@ -197,7 +197,7 @@ class Language:
         generator = self._make_iterator(X_unmapped, training=True)
 
         document_model = Doc2Vec(
-            vector_size=self.hyperparams.vec_dims, workers=cpu_count(),
+            vector_size=self.hyperparams.vec_dims, workers=max(1, cpu_count() - 2),
             window=self.hyperparams.vec_window)
         document_model.build_vocab(generator)
         document_model.train(
