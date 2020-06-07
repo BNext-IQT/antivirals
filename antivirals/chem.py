@@ -194,7 +194,7 @@ class Language:
         self._analyzer = cv.build_analyzer()
 
     def _fit_document_model(self, X_unmapped: Sequence[str], X: Sequence[str], Y: np.ndarray):
-        generator = self._make_iterator(X_unmapped, training=True)
+        generator = list(self._make_iterator(X_unmapped, training=True))
 
         document_model = Doc2Vec(
             vector_size=self.hyperparams.vec_dims, workers=max(1, cpu_count() - 2),
