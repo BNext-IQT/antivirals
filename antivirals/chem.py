@@ -115,10 +115,13 @@ class Toxicity:
 
     def fit(self, X: Sequence[str], Y: np.ndarray):
         self.classif = RandomForestClassifier(
-            bootstrap=False, criterion='entropy', max_features=0.25,
+            bootstrap=False, 
+            criterion=self.hyperparams.tree_criterion, 
+            max_features=0.25,
             min_samples_leaf=self.hyperparams.min_samples_leaf,
             min_samples_split=self.hyperparams.min_samples_split,
-            n_estimators=self.hyperparams.estimators)
+            n_estimators=self.hyperparams.estimators,
+            n_jobs=-1)
 
         self.classif.fit(self._to_language_vecs(X), Y)
 
