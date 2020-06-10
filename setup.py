@@ -50,8 +50,7 @@ setup(
     install_requires=['tqdm', 'sqlalchemy', 'numpy', 'scikit-learn', 'pandas',
                       'fire', 'gensim'],
     extras_require={
-        'gpu': ['tensorflow-gpu'],
-        'cpu': ['tensorflow']
+        'optim': ['sigopt']
     },
     tests_require=['pytest'],
     ext_modules = cythonize('antivirals/parser.py', language_level='3'),

@@ -1,5 +1,6 @@
 import os
 import sys
+import importlib
 from fire import Fire
 from antivirals import run_agent, run_data_gathering, run_train_models, audit_all_models, garbage_collect_models
 from antivirals.chem import Hyperparameters
@@ -64,12 +65,34 @@ class Controller:
         """
         audit_all_models()
 
-
+    
     def garbage_collect(self, save=5, dry_run=False, verbose=False):
         """
         Garbage collect poorly performing models.
         """
         garbage_collect_models(save, dry_run, verbose)
+    
+    if importlib.find_loader('sigopt'):
+        def new_experiment(self, apikey, kind='doc2vec'):
+            """
+            Create a new SigOpt experiment.
+            """
+            from antivirals.extras.optim import create_experiment_doc2vec, create_experiment_lda
+            if kind == 'doc2vec':
+                print(create_experiment_doc2vec(apikey))
+            elif kind == 'lda':
+                print(create_experiment_lda(apikey))
+            else:
+                print(f"ERROR: Unsupported experiment: {kind}", file=sys.stderr)
+                exit(-1)
+        
+        def continue_experiment(self, db, apikey, exp_id):
+            """
+            Continue running a SigOpt experiment.
+            """
+            from antivirals.extras.optim import continue_experiment
+
+            continue_experiment(db, apikey, exp_id)
 
 
 def main():
