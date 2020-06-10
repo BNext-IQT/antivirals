@@ -38,18 +38,26 @@ class Hyperparameters:
     """
     Hyperparameters for all chemistry models.
     """
-    
     # Language hyperparams
-    vec_dims = 32
-    vec_window = 8
-    max_vocab = 18000
-    max_ngram = 6
-    doc_epochs = 32
+    max_ngram = 2
+
+    # Doc2Vec hyperparmas
+    vec_dims = 117
+    vec_window = 3
+    max_vocab = 100000
+    doc_epochs = 47
+
+    # LDA hyperparams
+    topic_epochs = 1
+    topic_iterations = 50
+    topics = 32
+    decay = 0.5
 
     # Toxicity hyperparams
-    estimators = 256
-    min_samples_split = 6
-    min_samples_leaf = 6
+    estimators = 511
+    min_samples_split = 3
+    min_samples_leaf = 4
+    tree_criterion = 'entropy'
 
     @staticmethod
     def from_dict(values):
