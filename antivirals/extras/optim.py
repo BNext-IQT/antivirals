@@ -97,7 +97,7 @@ def create_experiment_lda(apikey):
         metadata=dict(
             template="antivirals"
         ),
-        observation_budget=800,
+        observation_budget=300,
         parallel_bandwidth=10,
         project="antivirals"
     )
