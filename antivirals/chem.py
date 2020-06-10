@@ -216,6 +216,28 @@ class Language:
 
         self.document_model = document_model
 
+    def _fit_topic_model(
+            self, X_unmapped: Sequence[str],
+            X: Sequence[str],
+            Y: np.ndarray):
+        from gensim.models.ldamulticore import LdaMulticore
+        from gensim.corpora.dictionary import Dictionary
+        iterator = self._make_iterator(X_unmapped)
+        bow = Dictionary(iterator)
+
+        class _EmitBow:
+            def __iter__(self):
+                for i in iterator:
+                    yield bow.doc2bow(i)
+
+        self.topic_model = LdaMulticore(
+            _EmitBow(),
+            id2word=bow, num_topics=self.hyperparams.topics,
+            iterations=self.hyperparams.topic_iterations,
+            passes=self.hyperparams.topic_epochs, random_state=18,
+            decay=self.hyperparams.decay)
+        self.dictionary = bow
+
     def fit(self, X_unmapped: Sequence[str], X: Sequence[str], Y: np.ndarray):
         self._fit_language(X_unmapped, X, Y)
         self._fit_document_model(X_unmapped, X, Y)
