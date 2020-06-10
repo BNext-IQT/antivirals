@@ -43,13 +43,18 @@ def audit_all_models():
             print("--------")
 
 
-def garbage_collect_models(save_best_n: int, dry_run: bool):
+def garbage_collect_models(save_best_n: int, dry_run: bool, verbose: bool):
     model_dir = Path('data', 'chemistry')
     metrics = {}
     for model in model_dir.iterdir():
         with open(model, 'rb') as fd:
             chem = pickle.load(fd)
             metrics[chem.uuid] = sum(chem.toxicity.auc) / len(chem.toxicity.auc)
+            if verbose:
+                print(f"Model UUID: {chem.uuid}")
+                print(f"AUC: {sum(chem.toxicity.auc) / len(chem.toxicity.auc)}")
+                print(f"Hyperparams: {chem.hyperparams.__dict__}")
+                print("--------")
     
     models_sorted = [k for k, _ in sorted(metrics.items(), key=lambda i: i[1])]
 

@@ -65,11 +65,11 @@ class Controller:
         audit_all_models()
 
 
-    def garbage_collect(self, save=5, dry_run=False):
+    def garbage_collect(self, save=5, dry_run=False, verbose=False):
         """
         Garbage collect poorly performing models.
         """
-        garbage_collect_models(save, dry_run)
+        garbage_collect_models(save, dry_run, verbose)
 
 
 def main():
