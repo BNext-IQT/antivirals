@@ -91,7 +91,7 @@ class Chemistry:
         self.language.fit(mols.get_all_mols(), X, y)
         self.toxicity = Toxicity(self.hyperparams, self.language)
         self.toxicity.build(X, y)
-        print(f"Trained {self.uuid} -- {self.hyperparams}")
+        print(f"Trained new chemistry model: {self.uuid}")
 
 class Toxicity:
     """
