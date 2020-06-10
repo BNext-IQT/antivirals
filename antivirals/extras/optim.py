@@ -206,6 +206,10 @@ def continue_experiment(dbstring, apikey, exp_id):
         except ApiException:
             suggestion = conn.experiments(exp_id).suggestions().delete()
             suggestion = conn.experiments(exp_id).suggestions().create()
+        if suggestion.assignments.get('topics'):
+            suggestion.assignments['vector_algo'] = 'lda'
+        elif suggestion.assignments.get('vec_dims'):
+            suggestion.assignments['vector_algo'] = 'doc2vec'
         assignments = Hyperparameters.from_dict(suggestion.assignments)
         chem = run_train_models(dbstring, assignments)
         mean = sum(chem.toxicity.auc) / len(chem.toxicity.auc)

@@ -40,6 +40,7 @@ class Hyperparameters:
     """
     # Language hyperparams
     max_ngram = 2
+    vector_algo = 'doc2vec'
 
     # Doc2Vec hyperparmas
     vec_dims = 117
@@ -81,7 +82,7 @@ class Chemistry:
             hyperparams: Hyperparameters = Hyperparameters()):
         self.hyperparams = hyperparams
         self.language = Language(self.hyperparams)
-            self.toxicity = Toxicity(self.hyperparams, self.language)
+        self.toxicity = Toxicity(self.hyperparams, self.language)
         self.uuid = str(uuid4())
 
     def from_molecules(self, mols: Molecules):
@@ -93,6 +94,7 @@ class Chemistry:
         self.toxicity.build(X, y)
         print(f"Trained new chemistry model: {self.uuid}")
 
+
 class Toxicity:
     """
     Implments the toxicity model ontop of the latent vectors of the chemical language model.
@@ -103,27 +105,17 @@ class Toxicity:
         self.hyperparams = hyperparams
         self.language = language_model
 
-    def _to_language_vecs(self, X: Sequence[str]) -> np.ndarray:
-        # Preallocate memory for performance
-        latent_vecs = np.empty(
-            (len(X), self.language.document_model.vector_size))
-
-        for i, sent in enumerate(self.language.make_generator(X)):
-            latent_vecs[i] = self.language.document_model.infer_vector(sent)
-
-        return latent_vecs
-
     def fit(self, X: Sequence[str], Y: np.ndarray):
         self.classif = RandomForestClassifier(
-            bootstrap=False, 
-            criterion=self.hyperparams.tree_criterion, 
+            bootstrap=False,
+            criterion=self.hyperparams.tree_criterion,
             max_features=0.25,
             min_samples_leaf=self.hyperparams.min_samples_leaf,
             min_samples_split=self.hyperparams.min_samples_split,
             n_estimators=self.hyperparams.estimators,
             n_jobs=-1)
 
-        self.classif.fit(self._to_language_vecs(X), Y)
+        self.classif.fit(self.language.to_vecs(X), Y)
 
     def build(self, X: Sequence[str] = None, Y: np.ndarray = None):
         Xt, Xv, Yt, Yv = train_test_split(X, Y, test_size=0.2, random_state=18)
@@ -131,13 +123,14 @@ class Toxicity:
         self.auc = self.audit(Xv, Yv)
 
     def audit(self, X: Sequence[str], Y: np.ndarray):
-        Yhats = self.classif.predict_proba(self._to_language_vecs(X))
+        Yhats = self.classif.predict_proba(self.language.to_vecs(X))
         if 'to_numpy' in dir(Y):
-            Y = Y.to_numpy() 
+            Y = Y.to_numpy()
         res = []
         for i, Yhat in enumerate(Yhats):
-            res.append(roc_auc_score(Y[:, i], Yhat[:, 1]))     
+            res.append(roc_auc_score(Y[:, i], Yhat[:, 1]))
         return res
+
 
 class Language:
     """
@@ -147,6 +140,10 @@ class Language:
     """
 
     def __init__(self, hyperparams: Hyperparameters):
+        self.hyperparams = hyperparams
+        if hyperparams.vector_algo != 'doc2vec' and hyperparams.vector_algo != 'lda':
+            raise RuntimeError(
+                f"Unsupported algorithm: {hyperparams.vector_algo}")
         self.hyperparams = hyperparams
 
     def _smiles_to_advanced_lang(self, smiles_seq: Generator
@@ -175,10 +172,20 @@ class Language:
     def make_generator(self, X):
         return self._smiles_to_advanced_lang(trivial_generator(X))
 
-    def to_vecs(self, smiles_seq: Generator[str, None, None]) -> Generator[np.ndarray, None, None]:
-        translation = self.make_generator(smiles_seq)
-        for sentence in translation:
-            yield self.document_model.infer_vector(sentence)
+    def to_vecs(self, X: Sequence[str]) -> np.ndarray:
+        if self.hyperparams.vector_algo == 'lda':
+            bows = [self.dictionary.doc2bow(i) for i in self.make_generator(X)]
+            latent_vecs, _ = self.topic_model.inference(bows)
+            return latent_vecs
+        elif self.hyperparams.vector_algo == 'doc2vec':
+            # Preallocate memory for performance
+            latent_vecs = np.empty(
+                (len(X), self.document_model.vector_size))
+
+            for i, sent in enumerate(self.make_generator(X)):
+                latent_vecs[i] = self.document_model.infer_vector(sent)
+
+            return latent_vecs
 
     def _fit_language(
             self, X_unmapped: Sequence[str],
@@ -247,4 +254,7 @@ class Language:
 
     def fit(self, X_unmapped: Sequence[str], X: Sequence[str], Y: np.ndarray):
         self._fit_language(X_unmapped, X, Y)
-        self._fit_document_model(X_unmapped, X, Y)
+        if self.hyperparams.vector_algo == 'lda':
+            self._fit_topic_model(X_unmapped, X, Y)
+        elif self.hyperparams.vector_algo == 'doc2vec':
+            self._fit_document_model(X_unmapped, X, Y)
