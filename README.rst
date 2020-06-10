@@ -62,6 +62,7 @@ The system is structured in a quazi Model-View-Controller (MVC) architecture.
 * __main__.py: A command-line user interface. The "view" layer in MVC.
 * data.py: Maps from public datasets (eg. ZINC Clean Leads, Tox21) to the molecular database schema.
 * chem.py: The actual cheminformatics machine learning algorithms.
+* parser.py: A Cython-optimized SMILES language parser used by the cheminformatics algorithms. 
 
 We are investigating how to deploy it at scale on Kubernetes. Help is needed!
 
