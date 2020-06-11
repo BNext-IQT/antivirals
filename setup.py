@@ -25,7 +25,7 @@ class PyTest(test):
 # The actual setup metadata
 setup(
     name='antivirals',
-    version='0.0.1',
+    version='0.0.2',
     description='Finding antivirals for the novel coronavirus.',
     long_description=open("README.rst").read(),
     keywords='machine_learning artificial_intelligence medicine devops',
