@@ -21,7 +21,7 @@ def create_experiment_lda(apikey):
                 name="estimators",
                 bounds=dict(
                     min=10,
-                    max=700
+                    max=512
                 ),
                 type="int"
             ),
@@ -29,7 +29,7 @@ def create_experiment_lda(apikey):
                 name="topic_epochs",
                 bounds=dict(
                     min=1,
-                    max=18
+                    max=6
                 ),
                 type="int"
             ),
