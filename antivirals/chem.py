@@ -55,7 +55,7 @@ class Hyperparameters:
     decay = 0.5
 
     # Toxicity hyperparams
-    estimators = 511
+    estimators = 256
     min_samples_split = 3
     min_samples_leaf = 4
     tree_criterion = 'entropy'
@@ -112,8 +112,8 @@ class Toxicity:
             max_features=0.25,
             min_samples_leaf=self.hyperparams.min_samples_leaf,
             min_samples_split=self.hyperparams.min_samples_split,
-            n_estimators=self.hyperparams.estimators,
-            n_jobs=-1)
+            n_estimators=self.hyperparams.estimators
+        )
 
         self.classif.fit(self.language.to_vecs(X), Y)
 
