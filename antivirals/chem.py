@@ -236,16 +236,13 @@ class Language:
             Y: np.ndarray):
         from gensim.models.ldamulticore import LdaMulticore
         from gensim.corpora.dictionary import Dictionary
-        iterator = self._make_iterator(X_unmapped)
+        iterator = list(self.make_generator(X_unmapped))
         bow = Dictionary(iterator)
 
-        class _EmitBow:
-            def __iter__(self):
-                for i in iterator:
-                    yield bow.doc2bow(i)
+        docs = [bow.doc2bow(i) for i in iterator]
 
         self.topic_model = LdaMulticore(
-            _EmitBow(),
+            docs,
             id2word=bow, num_topics=self.hyperparams.topics,
             iterations=self.hyperparams.topic_iterations,
             passes=self.hyperparams.topic_epochs, random_state=18,
