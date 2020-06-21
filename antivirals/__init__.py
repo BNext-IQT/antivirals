@@ -11,6 +11,12 @@ def _create_sess(dbstring: str) -> Session:
     return sessionmaker()(bind=engine)
 
 
+def _introspect_model(chem: Chemistry):
+    print(f"Model UUID: {chem.uuid} :: "
+          f"AUC: {sum(chem.toxicity.auc) / len(chem.toxicity.auc)} :: "
+          f"Hyperparams: {chem.hyperparams.__dict__}")
+
+
 def run_agent(dbstring: str):
     pass
 
@@ -46,6 +52,9 @@ def audit_all_models():
 def garbage_collect_models(save_best_n: int, dry_run: bool, verbose: bool):
     model_dir = Path('data', 'chemistry')
     metrics = {}
+    if verbose:
+        print("MODEL INFORMATION\n"
+              "-----------------\n")
     for model in model_dir.iterdir():
         with open(model, 'rb') as fd:
             try:
@@ -53,15 +62,16 @@ def garbage_collect_models(save_best_n: int, dry_run: bool, verbose: bool):
             except (pickle.UnpicklingError, EOFError):
                 print(f"WARNING: Unpickling {model} failed. Skipping...")
                 continue
+            
             metrics[chem.uuid] = sum(chem.toxicity.auc) / len(chem.toxicity.auc)
             if verbose:
-                print(f"Model UUID: {chem.uuid}")
-                print(f"AUC: {sum(chem.toxicity.auc) / len(chem.toxicity.auc)}")
-                print(f"Hyperparams: {chem.hyperparams.__dict__}")
-                print("--------")
+                _introspect_model(chem)
     
     models_sorted = [k for k, _ in sorted(metrics.items(), key=lambda i: i[1])]
 
+    if verbose:
+        print("\nGARBAGE COLLECTED MODELS\n"
+              "------------------------")
     for model in models_sorted[:-save_best_n]:
         print(model)
         if not dry_run:
