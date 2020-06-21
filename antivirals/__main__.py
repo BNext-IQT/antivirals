@@ -2,7 +2,7 @@ import os
 import sys
 import importlib
 from fire import Fire
-from antivirals import run_agent, run_data_gathering, run_train_models, audit_all_models, garbage_collect_models
+from antivirals import run_agent, run_data_gathering, run_train_models, garbage_collect_models
 from antivirals.chem import Hyperparameters
 
 def _get_dbstring() -> str:
@@ -57,14 +57,6 @@ class Controller:
             raise EnvironmentError("ANTIVIRALS_DB needs to be set.")
 
         run_agent(_get_dbstring())
-
-
-    def audit(self):
-        """
-        Display some analytics on all stored models.
-        """
-        audit_all_models()
-
     
     def garbage_collect(self, save=5, dry_run=False, verbose=False):
         """
