@@ -48,7 +48,11 @@ def garbage_collect_models(save_best_n: int, dry_run: bool, verbose: bool):
     metrics = {}
     for model in model_dir.iterdir():
         with open(model, 'rb') as fd:
-            chem = pickle.load(fd)
+            try:
+                chem = pickle.load(fd)
+            except (pickle.UnpicklingError, EOFError):
+                print(f"WARNING: Unpickling {model} failed. Skipping...")
+                continue
             metrics[chem.uuid] = sum(chem.toxicity.auc) / len(chem.toxicity.auc)
             if verbose:
                 print(f"Model UUID: {chem.uuid}")
