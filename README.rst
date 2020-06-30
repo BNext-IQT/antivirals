@@ -46,12 +46,18 @@ Apache 2. See LICENSE file for details.
 Installation
 ~~~~~~~~~~~~
 
-Using the system through Docker is highly recommended:
+Using the system through our highly optimized Docker container is recommended:
 
 :: 
 
     docker run -v my_host_data_directory:/app/data -it inqtel/antivirals up sqlite:////app/data/antivirals.db
 
+
+Alternatively, we publish a Python package:
+
+::
+
+    pip install antivirals
 
 Architecture
 ~~~~~~~~~~~~
