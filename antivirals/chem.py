@@ -49,9 +49,9 @@ class Hyperparameters:
     doc_epochs = 47
 
     # LDA hyperparams
-    topic_epochs = 1
-    topic_iterations = 50
-    topics = 32
+    topic_epochs = 5
+    topic_iterations = 20
+    topics = 16
     decay = 0.5
 
     # Toxicity hyperparams
