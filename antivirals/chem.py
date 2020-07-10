@@ -1,4 +1,3 @@
-from __future__ import annotations
 from uuid import uuid4
 from typing import Sequence, Generator
 from multiprocessing import cpu_count
@@ -71,9 +70,6 @@ class Chemistry:
     """
     A master model that encodes all aspects of chemistry.
     """
-
-    toxicity: Toxicity
-    language: Language
     hyperparams: Hyperparameters
     uuid: str
 
