@@ -1,6 +1,7 @@
 from sqlalchemy.orm.session import Session
 import pandas as pd
 from tqdm import tqdm
+from chembl_webresource_client.new_client import new_client
 from antivirals.schema import DatasetExistsError, Molecules, Origin, OriginCategory, PropertyCategory, PartitionCategory, Property, Test, add_dataset, create_db, add_props
 
 NR_AR = Property(
@@ -139,8 +140,16 @@ class ChEMBL:
         desc='ChEMBL is a manually curated chemical database of bioactive molecules with drug-like properties.',
         category=OriginCategory.GroundTruth
     )
-    source = 'ftp://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/chembl_27_sqlite.tar.gz'
-    archive_path = 'chembl_27/chembl_27_sqlite/chembl_27.db'
+
+    def _generate(self):
+        chembl_mols = new_client.molecule
+        for chembl_mol in chembl_mols:
+            yield chembl_mol['molecule_structures']['canonical_smiles'], {
+                'ChEMBL_Id': chembl_mol['molecule_chembl_id'],
+                'LogP': chembl_mol['molecule_properties']['cx_logp'],
+                'IsTherapeutic': chembl_mol['therapeutic_flag']
+                
+            }
 
     def to_sql(self, sess: Session):
         pass

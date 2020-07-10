@@ -48,7 +48,7 @@ setup(
     ],
     packages=find_packages(),
     install_requires=['tqdm', 'sqlalchemy', 'numpy', 'scikit-learn', 'pandas',
-                      'fire', 'gensim'],
+                      'fire', 'gensim', 'chembl_webresource_client'],
     extras_require={
         'optim': ['sigopt']
     },
