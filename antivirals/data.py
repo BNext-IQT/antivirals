@@ -144,11 +144,13 @@ class ChEMBL:
     def _generate(self):
         chembl_mols = new_client.molecule
         for chembl_mol in chembl_mols:
+            tags = []
+            if chembl_mol['therapeutic_flag']:
+                tags.append('Therapeutic')
             yield chembl_mol['molecule_structures']['canonical_smiles'], {
                 'ChEMBL_Id': int(chembl_mol['molecule_chembl_id'].replace('CHEMBL', '')),
                 'LogP': chembl_mol['molecule_properties']['cx_logp'],
-                'IsTherapeutic': chembl_mol['therapeutic_flag']
-                
+                'Tag': tags
             }
 
     def to_sql(self, sess: Session):
