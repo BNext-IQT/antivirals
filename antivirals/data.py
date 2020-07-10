@@ -122,6 +122,13 @@ Tag = Property(
     test=Test.StringIdentifier
 )
 
+LogP = Property(
+    name='LogP',
+    desc='The concentration log-ratio of a mixture of two immiscible solvents',
+    category=PropertyCategory.Solubility,
+    test=Test.Intensity
+)
+
 
 class ZINC:
     origin = Origin(
