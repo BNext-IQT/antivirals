@@ -97,7 +97,7 @@ class Toxicity:
     """
     auc: Sequence[float]
 
-    def __init__(self, hyperparams: Hyperparameters, language_model: Language):
+    def __init__(self, hyperparams: Hyperparameters, language_model):
         self.hyperparams = hyperparams
         self.language = language_model
 
