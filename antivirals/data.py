@@ -145,7 +145,7 @@ class ChEMBL:
         chembl_mols = new_client.molecule
         for chembl_mol in chembl_mols:
             yield chembl_mol['molecule_structures']['canonical_smiles'], {
-                'ChEMBL_Id': chembl_mol['molecule_chembl_id'],
+                'ChEMBL_Id': int(chembl_mol['molecule_chembl_id'].replace('CHEMBL', '')),
                 'LogP': chembl_mol['molecule_properties']['cx_logp'],
                 'IsTherapeutic': chembl_mol['therapeutic_flag']
                 
