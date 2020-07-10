@@ -148,6 +148,8 @@ class ChEMBL:
         category=OriginCategory.GroundTruth
     )
 
+    properties = [ChemblId, LogP, Tag]
+
     def _generate(self):
         chembl_mols = new_client.molecule
         for chembl_mol in chembl_mols:
