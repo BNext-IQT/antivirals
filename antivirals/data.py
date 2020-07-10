@@ -163,7 +163,13 @@ class ChEMBL:
             }
 
     def to_sql(self, sess: Session):
-        pass
+        source_id = add_dataset(sess, self.origin)
+        add_props(sess, self.properties)
+        mols = Molecules(sess)
+
+        for row in tqdm(self._generate(), total=len(new_client.molecule), unit=' row'):
+            smiles, props = row
+            mols.add(source_id, smiles, props)
 
 class MOSES:
     origin = Origin(

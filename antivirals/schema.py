@@ -68,6 +68,12 @@ class TextMetadata(Base):
     mol_id = Column(Integer, ForeignKey('molecules.id'))
     value = Column(String, nullable=False)
 
+class IntMetadata(Base):
+    __tablename__ = 'metadata_int'
+    id = Column(Integer, primary_key=True)
+    prop_id = Column(Integer, ForeignKey('properties.id'))
+    mol_id = Column(Integer, ForeignKey('molecules.id'))
+    value = Column(Integer, nullable=False)
 
 class Origin(Base):
     __tablename__ = 'origins'
@@ -144,7 +150,12 @@ class Molecules:
                         self.sess.add(TextMetadata(
                             prop_id=prop_id, mol_id=mol_id,
                             value=i))
-            else:
+            elif isinstance(v, int):
+                prop_id = self.props.get(k)
+                if prop_id:
+                    self.sess.add(IntMetadata(
+                        prop_id=prop_id, mol_id=mol_id, value=v))
+            elif isinstance(v, tuple):
                 prop_id = self.props.get(k)
                 if prop_id:
                     value, confidence = v
