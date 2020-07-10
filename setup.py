@@ -31,7 +31,7 @@ setup(
     keywords='machine_learning artificial_intelligence medicine devops',
     author='JJ Ben-Joseph',
     author_email='jbenjoseph@iqt.org',
-    python_requires='>=3.7',
+    python_requires='>=3.6',
     url='https://www.github.com/bnext-iqt/antivirals',
     license='Apache',
     classifiers=[
