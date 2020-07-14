@@ -181,7 +181,7 @@ class MOSES:
         desc='Benchmark dataset of drug-like molecules from the ZINC Clean Leads collection',
         category=OriginCategory.GroundTruth
     )
-    properties = []
+    properties = [Tag]
     source = 'https://media.githubusercontent.com/media/molecularsets/moses/master/data/dataset_v1.csv'
 
     def to_df(self) -> pd.DataFrame:
@@ -189,7 +189,9 @@ class MOSES:
 
     def to_sql(self, sess: Session):
         source_id = add_dataset(sess, self.origin)
+        add_props(sess, self.properties)
         mols = Molecules(sess)
+        
         df = self.to_df()
         row_count, _ = df.shape
         for _, row in tqdm(df.iterrows(), total=row_count, unit=' row'):
