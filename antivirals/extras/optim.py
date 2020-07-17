@@ -20,7 +20,7 @@ def create_experiment_lda(apikey):
             dict(
                 name="estimators",
                 bounds=dict(
-                    min=10,
+                    min=256,
                     max=512
                 ),
                 type="int"
@@ -50,18 +50,10 @@ def create_experiment_lda(apikey):
                 type="int"
             ),
             dict(
-                name="max_ngram",
-                bounds=dict(
-                    min=2,
-                    max=5
-                ),
-                type="int"
-            ),
-            dict(
                 name="min_samples_split",
                 bounds=dict(
-                    min=2,
-                    max=12
+                    min=4,
+                    max=18
                 ),
                 type="int"
             ),
@@ -69,7 +61,7 @@ def create_experiment_lda(apikey):
                 name="min_samples_leaf",
                 bounds=dict(
                     min=2,
-                    max=18
+                    max=4
                 ),
                 type="int"
             ),
