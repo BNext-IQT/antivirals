@@ -113,15 +113,15 @@ def create_experiment_doc2vec(apikey):
                 name="vec_dims",
                 bounds=dict(
                     min=32,
-                    max=256
+                    max=512
                 ),
                 type="int"
             ),
             dict(
                 name="estimators",
                 bounds=dict(
-                    min=10,
-                    max=700
+                    min=256,
+                    max=512
                 ),
                 type="int"
             ),
@@ -130,14 +130,6 @@ def create_experiment_doc2vec(apikey):
                 bounds=dict(
                     min=1,
                     max=72
-                ),
-                type="int"
-            ),
-            dict(
-                name="max_ngram",
-                bounds=dict(
-                    min=2,
-                    max=7
                 ),
                 type="int"
             ),
@@ -153,15 +145,15 @@ def create_experiment_doc2vec(apikey):
                 name="vec_window",
                 bounds=dict(
                     min=2,
-                    max=6
+                    max=4
                 ),
                 type="int"
             ),
             dict(
                 name="min_samples_split",
                 bounds=dict(
-                    min=2,
-                    max=12
+                    min=4,
+                    max=18
                 ),
                 type="int"
             ),
@@ -169,7 +161,7 @@ def create_experiment_doc2vec(apikey):
                 name="min_samples_leaf",
                 bounds=dict(
                     min=2,
-                    max=18
+                    max=4
                 ),
                 type="int"
             ),
