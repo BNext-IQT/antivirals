@@ -180,6 +180,11 @@ def create_experiment_doc2vec(apikey):
     return experiment.id
 
 
+def clean_experiment(apikey, exp_id):
+    conn = Connection(client_token=apikey)
+    conn.experiments(exp_id).suggestions().delete()
+
+
 def continue_experiment(dbstring, apikey, exp_id):
     conn = Connection(client_token=apikey)
     experiment = conn.experiments(exp_id).fetch()
