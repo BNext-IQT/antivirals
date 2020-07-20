@@ -188,7 +188,7 @@ def continue_experiment(dbstring, apikey, exp_id):
         try:
             suggestion = conn.experiments(exp_id).suggestions().create()
         except ApiException:
-            suggestion = conn.experiments(exp_id).suggestions().delete()
+            conn.experiments(exp_id).suggestions().delete()
             suggestion = conn.experiments(exp_id).suggestions().create()
         if suggestion.assignments.get('topics'):
             suggestion.assignments['vector_algo'] = 'lda'
