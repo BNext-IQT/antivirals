@@ -42,10 +42,10 @@ class Hyperparameters:
     vector_algo = 'doc2vec'
 
     # Doc2Vec hyperparmas
-    vec_dims = 117
+    vec_dims = 460
     vec_window = 3
-    max_vocab = 100000
-    doc_epochs = 47
+    max_vocab = 35000
+    doc_epochs = 70
 
     # LDA hyperparams
     topic_epochs = 5
@@ -54,9 +54,9 @@ class Hyperparameters:
     decay = 0.5
 
     # Toxicity hyperparams
-    estimators = 256
-    min_samples_split = 3
-    min_samples_leaf = 4
+    estimators = 400
+    min_samples_split = 2
+    min_samples_leaf = 12
     tree_criterion = 'entropy'
 
     @staticmethod
