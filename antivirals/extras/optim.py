@@ -104,7 +104,7 @@ def create_experiment_doc2vec(apikey):
             dict(
                 name="vec_dims",
                 bounds=dict(
-                    min=32,
+                    min=256,
                     max=512
                 ),
                 type="int"
@@ -120,8 +120,8 @@ def create_experiment_doc2vec(apikey):
             dict(
                 name="doc_epochs",
                 bounds=dict(
-                    min=1,
-                    max=72
+                    min=70,
+                    max=120
                 ),
                 type="int"
             ),
@@ -173,8 +173,8 @@ def create_experiment_doc2vec(apikey):
         metadata=dict(
             template="antivirals"
         ),
-        observation_budget=300,
-        parallel_bandwidth=10,
+        observation_budget=200,
+        parallel_bandwidth=12,
         project="antivirals"
     )
     return experiment.id
