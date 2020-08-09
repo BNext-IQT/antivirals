@@ -2,6 +2,7 @@ from sigopt import Connection
 from sigopt.exception import ApiException
 from antivirals import run_train_models
 from antivirals.chem import Hyperparameters
+from uuid import UUID
 
 
 def create_experiment_lda(apikey):
@@ -85,7 +86,14 @@ def create_experiment_lda(apikey):
                 ],
                 type="categorical"
             )
-        ],
+        ], 
+        metrics=[dict(
+            name="AUC",
+            objective="maximize"
+        ), dict(
+            name="Model ID",
+            strategy="store"
+        )],
         metadata=dict(
             template="antivirals"
         ),
@@ -169,7 +177,14 @@ def create_experiment_doc2vec(apikey):
                 ],
                 type="categorical"
             )
-        ],
+        ], 
+        metrics=[dict(
+            name="AUC",
+            objective="maximize"
+        ), dict(
+            name="Model ID",
+            strategy="store"
+        )],
         metadata=dict(
             template="antivirals"
         ),
@@ -204,5 +219,13 @@ def continue_experiment(dbstring, apikey, exp_id):
         mean = sum(chem.toxicity.auc) / len(chem.toxicity.auc)
         conn.experiments(exp_id).observations().create(
             suggestion=suggestion.id,
-            value=mean
+            values=[
+                dict(
+                    name="AUC",
+                    value=mean,
+                ),
+                dict(
+                    name="Model ID",
+                    value=UUID(chem.uuid).int
+                )]
         )
