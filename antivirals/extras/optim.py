@@ -112,15 +112,23 @@ def create_experiment_doc2vec(apikey):
             dict(
                 name="vec_dims",
                 bounds=dict(
-                    min=256,
+                    min=300,
                     max=512
                 ),
                 type="int"
             ),
+             dict(
+                name="alpha",
+                bounds=dict(
+                    min=0.02,
+                    max=0.1
+                ),
+                type="double"
+            ),
             dict(
                 name="estimators",
                 bounds=dict(
-                    min=256,
+                    min=350,
                     max=512
                 ),
                 type="int"
@@ -128,37 +136,13 @@ def create_experiment_doc2vec(apikey):
             dict(
                 name="doc_epochs",
                 bounds=dict(
-                    min=70,
+                    min=90,
                     max=120
                 ),
                 type="int"
             ),
             dict(
-                name="max_vocab",
-                bounds=dict(
-                    min=10000,
-                    max=100000
-                ),
-                type="int"
-            ),
-            dict(
                 name="vec_window",
-                bounds=dict(
-                    min=2,
-                    max=4
-                ),
-                type="int"
-            ),
-            dict(
-                name="min_samples_split",
-                bounds=dict(
-                    min=4,
-                    max=18
-                ),
-                type="int"
-            ),
-            dict(
-                name="min_samples_leaf",
                 bounds=dict(
                     min=2,
                     max=4
