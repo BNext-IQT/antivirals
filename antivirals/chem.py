@@ -46,6 +46,7 @@ class Hyperparameters:
     vec_window = 3
     max_vocab = 35000
     doc_epochs = 110
+    alpha = 0.025
 
     # LDA hyperparams
     topic_epochs = 5
@@ -218,6 +219,7 @@ class Language:
 
         document_model = Doc2Vec(
             vector_size=self.hyperparams.vec_dims,
+            alpha=self.hyperparams.alpha,
             workers=max(1, cpu_count() - 2),
             window=self.hyperparams.vec_window)
         document_model.build_vocab(generator)
