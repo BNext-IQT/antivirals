@@ -46,7 +46,7 @@ class Hyperparameters:
     vec_window = 3
     max_vocab = 35000
     doc_epochs = 110
-    alpha = 0.025
+    alpha = 0.05
 
     # LDA hyperparams
     topic_epochs = 5
