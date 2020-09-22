@@ -43,7 +43,7 @@ class Hyperparameters:
 
     # Doc2Vec hyperparmas
     vec_dims = 460
-    vec_window = 3
+    vec_window = 4
     max_vocab = 35000
     doc_epochs = 110
     alpha = 0.05
